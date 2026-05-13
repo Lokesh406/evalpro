@@ -232,7 +232,7 @@ export default function App() {
             Professional Assessment System · 100% Free · Secure · Runs entirely in your browser
           </p>
           <p style={{ fontSize: 12, color: "rgba(0,0,0,0.4)", margin: 0 }}>
-            Built with ♥ by <span style={{ fontWeight: 700, color: "#0f3a7d" }}>Vignan University III CSE</span>
+            Built with ♥ by <span style={{ fontWeight: 700, color: "#0f3a7d" }}>UNPROFESSIONAL ENGINEEERS</span>
           </p>
         </div>
       </footer>
