@@ -46,33 +46,37 @@ export default function Navbar() {
       }}
     >
       <div style={{
-        maxWidth: 1160, margin: "0 auto", padding: "0 24px",
+        maxWidth: 1160, margin: "0 auto", padding: "0 16px",
         display: "flex", alignItems: "center", justifyContent: "space-between",
-        height: 62,
+        height: "auto", minHeight: 62,
+        flexWrap: "wrap",
+        "@media (max-width: 768px)": {
+          padding: "0 12px",
+        }
       }}>
         {/* Logo + Vignan */}
-        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 11 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "clamp(8px, 2vw, 12px)", flexWrap: "wrap" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "clamp(8px, 2vw, 11px)" }}>
             <Logo />
             <div>
               <span style={{
-                fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 17,
+                fontFamily: "var(--font-display)", fontWeight: 800, fontSize: "clamp(14px, 4vw, 17px)",
                 color: "#0f3a7d", letterSpacing: "-0.6px",
                 display: "block", lineHeight: 1.1,
               }}>
                 EvalPro
               </span>
-              <span style={{ fontSize: 9.5, fontWeight: 600, color: "rgba(31,41,55,0.45)", letterSpacing: "0.6px", textTransform: "uppercase" }}>
+              <span style={{ fontSize: "clamp(8px, 2vw, 9.5px)", fontWeight: 600, color: "rgba(31,41,55,0.45)", letterSpacing: "0.6px", textTransform: "uppercase" }}>
                 Assessment System
               </span>
-              <span style={{ fontSize: 8, fontWeight: 700, color: "#0f3a7d", letterSpacing: "0.4px", marginTop: 2, display: "block" }}>
+              <span style={{ fontSize: "clamp(7px, 1.5vw, 8px)", fontWeight: 700, color: "#0f3a7d", letterSpacing: "0.4px", marginTop: 2, display: "block" }}>
                 R22 C22
               </span>
             </div>
           </div>
 
-          {/* Vignan badge */}
-          <div style={{ display: "flex", alignItems: "center", gap: 8, paddingLeft: 12, borderLeft: "1px solid rgba(0,0,0,0.08)" }}>
+          {/* Vignan badge - Hidden on mobile */}
+          <div style={{ display: "flex", alignItems: "center", gap: 8, paddingLeft: 12, borderLeft: "1px solid rgba(0,0,0,0.08)", "@media (max-width: 640px)": { display: "none" } }}>
             <VignanLogo />
             <div>
               <div style={{ fontSize: 11, fontWeight: 700, color: "#1f2937", letterSpacing: "0.5px", lineHeight: 1.2 }}>
@@ -86,19 +90,20 @@ export default function Navbar() {
         </div>
 
         {/* Actions */}
-        <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+        <div style={{ display: "flex", gap: "clamp(6px, 2vw, 8px)", alignItems: "center", flexWrap: "wrap" }}>
 
 
-          {/* Professional badge */}
+          {/* Professional badge - Hidden on mobile */}
           <motion.div
             whileHover={{ scale: 1.05 }}
             style={{
               padding: "4px 10px", borderRadius: 100,
               background: "linear-gradient(135deg, rgba(15,58,125,0.08), rgba(37,99,235,0.06))",
               border: "1px solid rgba(15,58,125,0.2)",
-              fontSize: 10, fontWeight: 700, color: "#0f3a7d", letterSpacing: "0.3px",
+              fontSize: "clamp(9px, 2vw, 10px)", fontWeight: 700, color: "#0f3a7d", letterSpacing: "0.3px",
               display: "flex", alignItems: "center", gap: 5,
               cursor: "pointer",
+              "@media (max-width: 768px)": { display: "none" }
             }}
           >
             <div style={{ width: 5, height: 5, borderRadius: "50%", background: "#0f3a7d", animation: "pulse-glow 2s infinite" }} />
@@ -114,7 +119,7 @@ export default function Navbar() {
               padding: "8px 16px", borderRadius: 8,
               background: "linear-gradient(135deg, #ff6b35, #f7931e)",
               color: "#fff",
-              fontSize: 13, fontWeight: 600, cursor: "pointer",
+              fontSize: "clamp(11px, 2vw, 13px)", fontWeight: 600, cursor: "pointer",
               fontFamily: "inherit", display: "flex", alignItems: "center", gap: 6,
               border: "none",
               boxShadow: "0 4px 12px rgba(255,107,53,0.3)",

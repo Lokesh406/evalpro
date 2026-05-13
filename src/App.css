@@ -22,3 +22,131 @@ textarea {
 input[type="number"] {
   -moz-appearance: textfield;
 }
+
+/* ── RESPONSIVE DESIGN ───────────────────────────────────────────── */
+
+/* Base responsive typography */
+html {
+  font-size: clamp(14px, 2vw, 16px);
+}
+
+/* Mobile-first responsive utilities */
+@media (max-width: 1200px) {
+  body {
+    padding: 12px;
+  }
+}
+
+@media (max-width: 768px) {
+  body {
+    font-size: 14px;
+    padding: 8px;
+  }
+  
+  /* Modal adjustments for tablets */
+  [role="dialog"] {
+    margin: 16px !important;
+    max-width: calc(100vw - 32px) !important;
+  }
+}
+
+@media (max-width: 640px) {
+  body {
+    font-size: 13px;
+    padding: 6px;
+  }
+  
+  /* Stack layouts on small screens */
+  [style*="display: flex"]:not(.navbar-flex) {
+    flex-direction: column;
+  }
+  
+  /* Ensure buttons are touch-friendly */
+  button, a, [role="button"] {
+    min-height: 44px;
+    min-width: 44px;
+    padding: clamp(8px, 3vw, 12px) clamp(12px, 4vw, 16px);
+  }
+  
+  /* Modal padding on mobile */
+  [style*="padding: 32px"] {
+    padding: 20px !important;
+  }
+  
+  /* Input sizing for mobile */
+  input, textarea, select {
+    font-size: 16px; /* Prevents zoom on iOS */
+    padding: clamp(8px, 2vw, 12px);
+  }
+}
+
+@media (max-width: 480px) {
+  body {
+    font-size: 12px;
+    padding: 4px;
+  }
+  
+  /* Extra compact on very small screens */
+  h1 { font-size: clamp(18px, 5vw, 24px); }
+  h2 { font-size: clamp(16px, 4vw, 20px); }
+  h3 { font-size: clamp(14px, 3vw, 18px); }
+  
+  /* Ensure modals fit screen */
+  [style*="maxWidth: 420"] {
+    max-width: calc(100vw - 24px) !important;
+  }
+  
+  /* Stack buttons in export bar */
+  .export-bar-buttons {
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  .export-bar-buttons button {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+/* Landscape mobile optimization */
+@media (max-height: 600px) and (orientation: landscape) {
+  .navbar, nav {
+    min-height: 48px !important;
+    height: auto !important;
+  }
+  
+  body {
+    padding: 4px;
+  }
+}
+
+/* High DPI screens optimization */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  button, input, textarea, select {
+    border-width: 1px;
+  }
+}
+
+/* Print optimization */
+@media print {
+  nav, .navbar, .export-bar, .share-button {
+    display: none;
+  }
+  
+  body {
+    background: white !important;
+    color: black !important;
+    margin: 0;
+    padding: 10mm;
+  }
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes pulse-glow {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}

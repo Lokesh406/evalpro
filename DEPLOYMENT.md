@@ -44,6 +44,18 @@ Access app at: http://localhost:5173/evalpro/
 
 ## Deployment to Production
 
+### SPA route support for QR/share links
+
+Your QR code points to a URL like `https://your-site.com/?share=...`. For that to work after deployment, your host must always serve `index.html` for app routes so the React app can read the query string and decode the shared result.
+
+Use the rule below for your platform:
+
+- **Vercel:** add a rewrite from `/(.*)` to `/index.html`.
+- **Netlify:** create a `_redirects` file with `/* /index.html 200`.
+- **GitHub Pages:** use a `404.html` redirect fallback or a SPA-friendly branch/workflow.
+
+This repo now includes the Vercel rewrite in `vercel.json`.
+
 ### Option 1: Vercel (Frontend) + Railway (Backend) - RECOMMENDED
 
 #### 1. Frontend - Vercel
@@ -54,6 +66,8 @@ Access app at: http://localhost:5173/evalpro/
 5. Deploy ✅
 
 **After deployment, note your Vercel URL** (e.g., `https://evalpro.vercel.app`)
+
+**Important for QR/share links:** Vercel must rewrite all routes to `index.html` so URLs with `?share=` open the app instead of a 404.
 
 #### 2. Backend - Railway
 1. Go to https://railway.app
@@ -91,6 +105,8 @@ Re-deploy Vercel after this change.
 4. Start: `npm run server` (requires npm script setup)
 5. Add env vars (GMAIL_USER, GMAIL_PASS)
 6. Deploy backend separately
+
+**Important for QR/share links:** if the frontend is hosted on a different platform, make sure that platform has SPA fallback rewrites too.
 
 ---
 

@@ -56,6 +56,47 @@ export default function App() {
     }
   }, []);
 
+  // Handle share parameter from URL
+  useEffect(() => {
+    const decodeShareData = () => {
+      try {
+        const params = new URLSearchParams(window.location.search);
+        const shareParam = params.get('share');
+        
+        if (!shareParam) return;
+
+        // Decode from URL-safe Base64
+        const decoded = atob(shareParam.replace(/-/g, '+').replace(/_/g, '/'));
+        const data = JSON.parse(decodeURIComponent(escape(decoded)));
+
+        // Set the loaded data
+        if (data.name) setStudentName(data.name);
+        if (data.regNo) setRegNo(data.regNo);
+        
+        // Convert shared subjects to the proper format with IDs
+        if (data.subjects && Array.isArray(data.subjects)) {
+          const loadedSubjects = data.subjects.map((s, idx) => ({
+            id: Date.now() + idx,
+            name: s.name || "",
+            m1: s.m1 || { pret: "", t1: "", t2: "", t3: "", t4: "", t5: "" },
+            m2: s.m2 || { pret: "", t1: "", t2: "", t3: "", t4: "", t5: "" },
+          }));
+          setSubjects(loadedSubjects);
+          
+          // Auto-scroll to results
+          setTimeout(() => {
+            calcRef.current?.scrollIntoView({ behavior: "smooth" });
+          }, 300);
+        }
+      } catch (error) {
+        console.error("Error decoding share data:", error);
+        // Silently fail - if share data is invalid, just proceed normally
+      }
+    };
+
+    decodeShareData();
+  }, []);
+
   function updateSubject(id, mod, key, val) {
     setSubjects(prev =>
       prev.map(s => {
@@ -233,6 +274,9 @@ export default function App() {
           </p>
           <p style={{ fontSize: 12, color: "#333", fontWeight: 600, margin: 0 }}>
             Built with ♥ by <span style={{ fontWeight: 800, color: "#ff6b35" }}>UNPROFESSIONAL ENGINEEERS</span>
+          </p>
+          <p style={{ fontSize: 11, color: "#555", marginTop: 10 }}>
+            If any mistakes appear, please wait and they will be rectified soon. For support, contact us at <a href={`mailto:unprofessionalenginneers8@gmail.com`} style={{ color: "#ff6b35", fontWeight: 800 }}>unprofessionalenginneers8@gmail.com</a>.
           </p>
         </div>
       </footer>
