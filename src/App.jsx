@@ -228,11 +228,11 @@ export default function App() {
               EvalPro
             </span>
           </div>
-          <p style={{ fontSize: 11, color: "rgba(0,0,0,0.3)", margin: "0 0 8px" }}>
+          <p style={{ fontSize: 11, color: "#333", fontWeight: 600, margin: "0 0 8px" }}>
             Professional Assessment System · 100% Free · Secure · Runs entirely in your browser
           </p>
-          <p style={{ fontSize: 12, color: "rgba(0,0,0,0.4)", margin: 0 }}>
-            Built with ♥ by <span style={{ fontWeight: 700, color: "#0f3a7d" }}>UNPROFESSIONAL ENGINEEERS</span>
+          <p style={{ fontSize: 12, color: "#333", fontWeight: 600, margin: 0 }}>
+            Built with ♥ by <span style={{ fontWeight: 800, color: "#ff6b35" }}>UNPROFESSIONAL ENGINEEERS</span>
           </p>
         </div>
       </footer>
