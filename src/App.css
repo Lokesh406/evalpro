@@ -1,0 +1,24 @@
+/* ── App-level styles ─────────────────────────────────────────────
+   Most styling is inline (dynamic dark/light), but a few global
+   CSS rules live here that can't be done inline.
+   ──────────────────────────────────────────────────────────────── */
+
+/* Loader spin (used in UploadPanel) */
+.spin {
+  animation: spin 1s linear infinite;
+}
+
+/* Smooth theme transition on the root */
+.app-root {
+  transition: background 0.3s, color 0.3s;
+}
+
+/* Textarea resize handle styling */
+textarea {
+  resize: vertical;
+}
+
+/* Prevent layout shift on number inputs */
+input[type="number"] {
+  -moz-appearance: textfield;
+}
