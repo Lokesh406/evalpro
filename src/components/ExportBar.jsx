@@ -7,8 +7,11 @@ import EmailExportModal from "./EmailExportModal";
 
 function buildReportHTML(scored, studentName, regNo) {
   const finals  = scored.map(s => calcFinal(calcModule(s.m1), calcModule(s.m2)));
-  const avg     = finals.reduce((a, v) => a + v, 0) / finals.length;
-  const og      = getGrade(avg);
+  const avg     = finals.length ? (finals.reduce((a, v) => a + v, 0) / finals.length) : 0;
+  const ogBase = getGrade(avg);
+  const og = (avg < 22)
+    ? { min: 0, grade: "F", label: "Fail", color: "#ef4444" }
+    : ogBase;
   const dateStr = new Date().toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" });
 
   const rows = scored.map((s, i) => {
@@ -57,7 +60,7 @@ function buildReportHTML(scored, studentName, regNo) {
     .summary-card { display: inline-block; background: #fff; border: 2px solid #0f3a7d; border-radius: 14px; padding: 20px 28px; margin-bottom: 20px; box-shadow: 0 2px 12px rgba(15,58,125,0.08); }
     .summary-avg { font-size: 36px; font-weight: 900; line-height: 1; margin-bottom: 6px; color: #0f3a7d; }
     .formula-note { font-size: 11px; color: #666; margin-top: 14px; line-height: 1.7; padding: 12px 16px; background: #f0f8fb; border-left: 3px solid #0f3a7d; border-radius: 4px; }
-    .footer { margin-top: 36px; font-size: 11px; color: #999; text-align: center; border-top: 1px solid #e0e3f0; padding-top: 16px; }
+    .footer { margin-top: 36px; font-size: 11px; color: #1f2937; text-align: center; border-top: 1px solid #cbd5e1; padding-top: 16px; }
     @media print { body { padding: 24px 28px; background: #fff; } @page { margin: 18mm 14mm; } }
   </style>
 </head>
@@ -97,16 +100,16 @@ function buildReportHTML(scored, studentName, regNo) {
     <b>Evaluation Formula (R22 C22):</b> PRET(÷10→6) + T1(÷20→8) + T2(÷5→3) + T3(÷5→3) + T4(÷20→20) + T5(÷20→20) = 60/module · Final = (M1+M2)÷2
   </div>
   <div class="footer">
-    <div style="margin-bottom:12px;font-size:10px;color:#aaa">
+    <div style="margin-bottom:12px;font-size:10px;color:#111827">
       <div style="margin-bottom:4px"><b>Generated:</b> ${dateStr} at ${new Date().toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit", second: "2-digit" })}</div>
-      <div style="margin-bottom:4px"><b>Institution:</b> Vignan University, Hyderabad</div>
+<div style="margin-bottom:4px"><b>Institution:</b> Vignan University, Guntur</div>
       <div style="margin-bottom:4px"><b>Curriculum Pattern:</b> R22 C22</div>
       <div><b>System:</b> EvalPro v1.0 - Professional Assessment System</div>
     </div>
-    <div style="border-top:1px solid rgba(0,0,0,0.1);padding-top:8px;font-size:9px;color:#ccc">
+    <div style="border-top:1px solid rgba(0,0,0,0.18);padding-top:8px;font-size:9px;color:#111827;font-weight:600">
       Secure • Private • Browser-based • © 2026 Vignan University. This document is confidential and for authorized use only.
     </div>
-    <div style="margin-top:6px;font-size:9px;color:#c8c8c8;line-height:1.5">
+    <div style="margin-top:6px;font-size:9px;color:#1f2937;line-height:1.5;font-weight:600">
       If any mistakes appear, please wait and they will be rectified soon. If you face any issue, contact us at unprofessionalenginneers8@gmail.com.
     </div>
   </div>
@@ -241,7 +244,7 @@ export default function ExportBar({ subjects, studentName, regNo = "", dark, onT
         {btn(exportHTML, "rgba(99,102,241,0.08)", "rgba(99,102,241,0.2)", "#6366f1", <FileText size={14} />, "HTML Report", false)}
         {btn(exportPDF, "rgba(168,85,247,0.08)", "rgba(168,85,247,0.2)", "#a855f7", <Download size={14} />, "PDF", loading === "pdf")}
         {btn(exportJPG, "rgba(34,197,94,0.08)", "rgba(34,197,94,0.2)", "#22c55e", <Image size={14} />, "JPG", loading === "jpg")}
-        {btn(() => setShowShare(true), "rgba(245,158,11,0.08)", "rgba(245,158,11,0.2)", "#f59e0b", <Share2 size={14} />, "Share Link", false)}
+        {btn(() => setShowShare(true), "rgba(245,158,11,0.08)", "rgba(245,158,11,0.2)", "#f59e0b", <Share2 size={14} />, "Share (QR JPG)", false)}
         {btn(() => setShowEmailModal(true), "rgba(59,130,246,0.08)", "rgba(59,130,246,0.2)", "#3b82f6", <Mail size={14} />, "Email", false)}
         {onTrend && btn(onTrend, "rgba(59,130,246,0.08)", "rgba(59,130,246,0.2)", "#3b82f6", <Share2 size={14} />, "Trends", false)}
         {onAnalytics && btn(onAnalytics, "rgba(234,88,12,0.08)", "rgba(234,88,12,0.2)", "#ea580c", <BarChart3 size={14} />, "Analytics", false)}

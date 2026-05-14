@@ -380,7 +380,11 @@ export default function TrendAnalysisModal({ isOpen, onClose, subjects, studentN
         >
           <strong>💡 Tips:</strong> Focus on subjects showing downward trends. Increased module 2 performance indicates
           learning improvement over time.
+
+          <strong>Developed By UNPROFESSIONAL ENGINEERS </strong>
+          
         </div>
+        
       </div>
     </div>
   );

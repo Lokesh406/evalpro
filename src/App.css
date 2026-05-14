@@ -21,7 +21,9 @@ textarea {
 /* Prevent layout shift on number inputs */
 input[type="number"] {
   -moz-appearance: textfield;
+  appearance: textfield;
 }
+
 
 /* ── RESPONSIVE DESIGN ───────────────────────────────────────────── */
 

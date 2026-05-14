@@ -27,35 +27,89 @@ export default function SubjectAnalyticsModal({ isOpen, onClose, subjects, stude
   };
 
   const shareLink = () => {
-    const text = `Subject Analytics Report: Class Average ${avgMark.toFixed(1)}/60, Pass Rate ${passCount}/${analytics.length}`;
+    const text = `Subject Analytics Report: Class Average ${avgMark.toFixed(
+      1
+    )}/60, Pass Rate ${passCount}/${analytics.length}`;
+
+    // Also provide a shareable payload (grade/status/marks) via clipboard when native share isn't available.
+    const payload = {
+      studentName: studentName || null,
+      regNo: regNo || null,
+      avgMark,
+      passCount,
+      total: analytics.length,
+      subjects: analytics.map(s => ({
+        name: s.name,
+        m1: s.m1,
+        m2: s.m2,
+        final: s.final,
+        grade: s.grade,
+        status: s.status,
+      })),
+    };
+
+    const shareText = `${text}\n\n${JSON.stringify(payload)}`;
+
+
     if (navigator.share) {
-      navigator.share({ title: "Subject Analytics", text });
+      navigator.share({ title: "Subject Analytics", text: shareText });
     } else {
-      navigator.clipboard.writeText(text);
+      navigator.clipboard?.writeText(shareText);
       alert("Copied to clipboard!");
     }
   };
 
-  // Calculate analytics for each subject
-  const analytics = subjects.map(s => {
-    const m1 = calcModule(s.m1);
-    const m2 = calcModule(s.m2);
-    const final = calcFinal(m1, m2);
-    const grade = final !== null ? getGrade(final) : null;
+  // Step 1: Calculate base analytics (no avgMark-dependent logic yet)
+  const baseAnalytics = subjects
+    .map(s => {
+      const m1 = calcModule(s.m1);
+      const m2 = calcModule(s.m2);
+      const final = calcFinal(m1, m2);
+      const grade = final !== null ? getGrade(final) : null;
 
-    return {
-      name: s.name,
-      m1: m1,
-      m2: m2,
-      final: final,
-      grade: grade,
-      status: final !== null ? (final >= 35 ? "pass" : "fail") : "incomplete",
-    };
-  }).sort((a, b) => (a.final || 0) - (b.final || 0));
+      return {
+        name: s.name,
+        m1,
+        m2,
+        final,
+        grade,
+        status: final !== null ? (final >= 35 ? "pass" : "fail") : "incomplete",
+      };
+    })
+    .sort((a, b) => (a.final || 0) - (b.final || 0));
 
-  // Overall statistics
-  const validMarks = analytics.filter(a => a.final !== null);
-  const avgMark = validMarks.length > 0 ? validMarks.reduce((sum, a) => sum + a.final, 0) / validMarks.length : 0;
+  // Step 2: Compute avgMark using the base analytics
+  const validMarks = baseAnalytics.filter(a => a.final !== null);
+  const avgMark =
+    validMarks.length > 0
+      ? validMarks.reduce((sum, a) => sum + a.final, 0) / validMarks.length
+      : 0;
+
+  // Step 3: Apply avgMark-based rule.
+  // If avgMark < 22 => all subjects should be marked as Fail.
+  // Else (avgMark >= 22) => per-subject pass/fail based on final >= 35.
+  const allFail = avgMark < 22;
+
+  const FAIL_GRADE = { grade: "F", label: "Fail", color: "#ef4444", min: 0 };
+
+  const analytics = baseAnalytics.map(subject => {
+    if (subject.final === null) return subject;
+
+    if (allFail) {
+      return { ...subject, grade: FAIL_GRADE, status: "fail" };
+    }
+
+    // avgMark >= 22 => rely on subject.final derived status/grade.
+    return subject;
+  });
+
+  // Overall statistics (kept consistent with the same rule)
+  const overallGrade = (() => {
+    if (allFail) return FAIL_GRADE;
+    return getGrade(avgMark);
+  })();
+
+
   const lowestSubject = analytics[0];
   const highestSubject = [...analytics].sort((a, b) => (b.final || 0) - (a.final || 0))[0];
   const failedCount = analytics.filter(a => a.status === "fail").length;
@@ -217,7 +271,7 @@ export default function SubjectAnalyticsModal({ isOpen, onClose, subjects, stude
             }}
           >
             <div style={{ fontSize: 12, color: "#6b7280", marginBottom: 4 }}>Class Average</div>
-            <div style={{ fontSize: 20, fontWeight: 800, color: "#6366f1" }}>
+              <div style={{ fontSize: 20, fontWeight: 800, color: overallGrade.color || "#6366f1" }}>
               {avgMark.toFixed(1)}/60
             </div>
           </div>
@@ -431,7 +485,8 @@ export default function SubjectAnalyticsModal({ isOpen, onClose, subjects, stude
             lineHeight: 1.6,
           }}
         >
-          <strong>💡 Tips:</strong> Prioritize improving lowest-scoring subjects. Focus additional study efforts on topics covered in failing subjects.
+          <strong>💡 Tips:</strong> Prio2ritize improving lowest-scoring subjects. Focus additional study efforts on topics covered in failing subjects.
+        <strong>Developed By</strong> UNPROFESSIONAL ENGINEERS
         </div>
       </div>
     </div>

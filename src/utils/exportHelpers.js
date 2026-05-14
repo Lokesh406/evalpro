@@ -72,6 +72,9 @@ export function buildHTMLReport(subjects, studentName) {
       Formula: PRET(/10→6) + T1(/20→8) + T2(/5→3) + T3(/5→3) + T4(/20→20) + T5(/20→20) = 60 per module.
       Final = (M1 + M2) / 2
     </span>
+    <div style="margin-top:18px;font-size:12px;color:#444;font-weight:700">
+      Developed by Unprofessional Engineers
+    </div>
   </div>
 </body>
 </html>`;

@@ -47,22 +47,103 @@ export default function App() {
     document.body.style.color      = "#1f2937";
   }, []);
 
-  // Ensure the page stays at the top on initial load (prevent automatic scrolling)
+  // Preserve scroll position on refresh
+  // (prevents the UX issue where the page jumps back to the top on reload)
   useEffect(() => {
-    try {
-      window.scrollTo({ top: 0, left: 0 });
-    } catch (e) {
-      // ignore in non-browser environments
-    }
+    const SCROLL_KEY = "evalpro_scrollY_v1";
+
+    const saveScroll = () => {
+      try {
+        // window.pageYOffset is more widely supported than documentElement.scrollTop
+        const y = window.pageYOffset || document.documentElement.scrollTop || 0;
+        sessionStorage.setItem(SCROLL_KEY, String(y));
+      } catch (e) {
+        // ignore
+      }
+    };
+
+    const restoreScroll = () => {
+      try {
+        const raw = sessionStorage.getItem(SCROLL_KEY);
+        if (!raw) return;
+        const y = Number(raw);
+        if (!Number.isFinite(y)) return;
+        window.scrollTo({ top: y, left: 0 });
+      } catch (e) {
+        // ignore
+      }
+    };
+
+    // Save right before leaving / refresh
+    window.addEventListener("beforeunload", saveScroll);
+
+    // Restore once after initial render
+    const t = setTimeout(restoreScroll, 0);
+
+    return () => {
+      window.removeEventListener("beforeunload", saveScroll);
+      clearTimeout(t);
+    };
   }, []);
 
-  // Handle share parameter from URL
+
+  const SESSION_KEY = "evalpro_session_v1";
+
+  // Load cached state on refresh (temporary persistence)
+  useEffect(() => {
+    try {
+      const raw = sessionStorage.getItem(SESSION_KEY);
+      if (!raw) return;
+
+      const data = JSON.parse(raw);
+      if (!data || data.version !== 1) return;
+
+      if (typeof data.studentName === "string") setStudentName(data.studentName);
+      if (typeof data.regNo === "string") setRegNo(data.regNo);
+
+      if (Array.isArray(data.subjects)) {
+        const loadedSubjects = data.subjects
+          .filter(Boolean)
+          .map((s, idx) => ({
+            id: s.id ?? Date.now() + idx,
+            name: s.name || "",
+            m1: s.m1 || { pret: "", t1: "", t2: "", t3: "", t4: "", t5: "" },
+            m2: s.m2 || { pret: "", t1: "", t2: "", t3: "", t4: "", t5: "" },
+          }));
+        setSubjects(loadedSubjects);
+
+        // Restore UX: do not force-scroll; keep the current scroll position on refresh
+
+      }
+    } catch (e) {
+      // ignore cache failures
+    }
+    // Intentionally empty deps: load once
+  }, []);
+
+  // Persist state changes
+  useEffect(() => {
+    try {
+      const payload = {
+        version: 1,
+        studentName,
+        regNo,
+        subjects,
+        // preview intentionally not persisted
+      };
+      sessionStorage.setItem(SESSION_KEY, JSON.stringify(payload));
+    } catch (e) {
+      // ignore storage failures
+    }
+  }, [studentName, regNo, subjects]);
+
+  // Handle share parameter from URL (takes precedence over cached data)
   useEffect(() => {
     const decodeShareData = () => {
       try {
         const params = new URLSearchParams(window.location.search);
-        const shareParam = params.get('share');
-        
+        const shareParam = params.get("share");
+
         if (!shareParam) return;
 
         // Decode from URL-safe Base64
@@ -72,7 +153,7 @@ export default function App() {
         // Set the loaded data
         if (data.name) setStudentName(data.name);
         if (data.regNo) setRegNo(data.regNo);
-        
+
         // Convert shared subjects to the proper format with IDs
         if (data.subjects && Array.isArray(data.subjects)) {
           const loadedSubjects = data.subjects.map((s, idx) => ({
@@ -82,11 +163,11 @@ export default function App() {
             m2: s.m2 || { pret: "", t1: "", t2: "", t3: "", t4: "", t5: "" },
           }));
           setSubjects(loadedSubjects);
-          
+
           // Auto-scroll to results
-          setTimeout(() => {
-            calcRef.current?.scrollIntoView({ behavior: "smooth" });
-          }, 300);
+          // Do not force scroll on refresh/share load; preserve user scroll position
+          // (no scrollIntoView)
+
         }
       } catch (error) {
         console.error("Error decoding share data:", error);
@@ -96,6 +177,7 @@ export default function App() {
 
     decodeShareData();
   }, []);
+
 
   function updateSubject(id, mod, key, val) {
     setSubjects(prev =>
